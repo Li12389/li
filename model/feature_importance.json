@@ -1,0 +1,37 @@
+[
+  {
+    "feature": "arc_voltage",
+    "feature_name_cn": "电弧电压",
+    "importance": 0.1628
+  },
+  {
+    "feature": "torch_angle",
+    "feature_name_cn": "焊枪角度",
+    "importance": 0.1555
+  },
+  {
+    "feature": "wire_feed_speed",
+    "feature_name_cn": "送丝速度",
+    "importance": 0.1505
+  },
+  {
+    "feature": "gas_flow_rate",
+    "feature_name_cn": "气体流量",
+    "importance": 0.1418
+  },
+  {
+    "feature": "welding_current",
+    "feature_name_cn": "焊接电流",
+    "importance": 0.1349
+  },
+  {
+    "feature": "welding_speed",
+    "feature_name_cn": "焊接速度",
+    "importance": 0.1315
+  },
+  {
+    "feature": "base_metal_temperature",
+    "feature_name_cn": "母材温度",
+    "importance": 0.1229
+  }
+]

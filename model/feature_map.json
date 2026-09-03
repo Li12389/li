@@ -1,0 +1,9 @@
+{
+  "arc_voltage": "Arc Voltage (V)",
+  "welding_current": "Weld Current (A)",
+  "welding_speed": "Weld Speed (cm/min)",
+  "wire_feed_speed": "Wire Feed Speed (m/min)",
+  "gas_flow_rate": "Gas Flow Rate (L/min)",
+  "torch_angle": "Torch Angle (°)",
+  "base_metal_temperature": "Base Metal Temp (°C)"
+}
