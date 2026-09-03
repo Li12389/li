@@ -22,177 +22,321 @@
         </div>
     </header>
 
+    <!-- 功能分区标签栏 -->
+    <nav class="tab-nav">
+        <div class="tab-item active" data-tab="predict">
+            <span class="tab-icon">&#128269;</span>
+            <span class="tab-text">缺陷预测</span>
+        </div>
+        <div class="tab-item" data-tab="analysis">
+            <span class="tab-icon">&#128202;</span>
+            <span class="tab-text">数据分析</span>
+        </div>
+        <div class="tab-item" data-tab="history">
+            <span class="tab-icon">&#128196;</span>
+            <span class="tab-text">历史记录</span>
+        </div>
+    </nav>
+
     <main class="main-container">
-        <!-- 统计概览卡片 -->
-        <section class="stats-row">
-            <div class="stat-card">
-                <div class="stat-label">总预测次数</div>
-                <div class="stat-value" id="statTotal">0</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-label">正常次数</div>
-                <div class="stat-value stat-normal" id="statNormal">0</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-label">缺陷预警</div>
-                <div class="stat-value stat-warning" id="statDefect">0</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-label">缺陷率</div>
-                <div class="stat-value" id="statRate">0%</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-label">模型准确率</div>
-                <div class="stat-value stat-accuracy" id="statAccuracy">--</div>
-            </div>
-        </section>
 
-        <!-- 输入与结果区 -->
-        <section class="content-row">
-            <!-- 左侧：参数输入 -->
-            <div class="panel input-panel">
-                <div class="panel-header">
-                    <h2>焊接工艺参数输入</h2>
-                    <button class="btn-reset" id="btnReset" title="重置参数">重置</button>
-                </div>
-                <div class="panel-body">
-                    <form id="predictForm">
-                        <div class="form-grid">
-                            <div class="form-item">
-                                <label for="arc_voltage">电弧电压 <span class="unit">(V)</span></label>
-                                <input type="number" id="arc_voltage" name="arc_voltage" step="0.01" min="0" max="50" placeholder="例如: 22.5" required>
-                            </div>
-                            <div class="form-item">
-                                <label for="welding_current">焊接电流 <span class="unit">(A)</span></label>
-                                <input type="number" id="welding_current" name="welding_current" step="0.01" min="0" max="500" placeholder="例如: 180.0" required>
-                            </div>
-                            <div class="form-item">
-                                <label for="welding_speed">焊接速度 <span class="unit">(cm/min)</span></label>
-                                <input type="number" id="welding_speed" name="welding_speed" step="0.01" min="0" max="100" placeholder="例如: 30.0" required>
-                            </div>
-                            <div class="form-item">
-                                <label for="wire_feed_speed">送丝速度 <span class="unit">(m/min)</span></label>
-                                <input type="number" id="wire_feed_speed" name="wire_feed_speed" step="0.01" min="0" max="30" placeholder="例如: 8.0" required>
-                            </div>
-                            <div class="form-item">
-                                <label for="gas_flow_rate">气体流量 <span class="unit">(L/min)</span></label>
-                                <input type="number" id="gas_flow_rate" name="gas_flow_rate" step="0.01" min="0" max="50" placeholder="例如: 15.0" required>
-                            </div>
-                            <div class="form-item">
-                                <label for="torch_angle">焊枪角度 <span class="unit">(°)</span></label>
-                                <input type="number" id="torch_angle" name="torch_angle" step="0.01" min="0" max="90" placeholder="例如: 25.0" required>
-                            </div>
-                            <div class="form-item form-item-full">
-                                <label for="base_metal_temperature">母材温度 <span class="unit">(°C)</span></label>
-                                <input type="number" id="base_metal_temperature" name="base_metal_temperature" step="0.01" min="0" max="200" placeholder="例如: 50.0" required>
-                            </div>
-                        </div>
-                        <button type="submit" class="btn-predict" id="btnPredict">
-                            <span class="btn-text">开始预测</span>
-                            <span class="btn-loading" style="display:none;">预测中...</span>
-                        </button>
-                    </form>
-                    <div class="quick-fill">
-                        <span>快捷填充：</span>
-                        <button class="btn-quick" data-type="normal">正常参数示例</button>
-                        <button class="btn-quick" data-type="defect">异常参数示例</button>
+        <!-- ========== 分区1：缺陷预测 ========== -->
+        <section class="tab-content active" id="tab-predict">
+            <div class="predict-layout">
+                <!-- 左侧：参数输入 -->
+                <div class="panel input-panel">
+                    <div class="panel-header">
+                        <h2><span class="panel-num">01</span>焊接工艺参数输入</h2>
                     </div>
-                </div>
-            </div>
-
-            <!-- 右侧：预测结果 -->
-            <div class="panel result-panel">
-                <div class="panel-header">
-                    <h2>预测结果</h2>
-                </div>
-                <div class="panel-body">
-                    <div id="resultPlaceholder" class="result-placeholder">
-                        <div class="placeholder-icon">&#128269;</div>
-                        <p>请输入焊接工艺参数后点击"开始预测"</p>
+                    <!-- 预测模式切换 -->
+                    <div class="predict-tabs">
+                        <div class="predict-tab active" data-mode="single">单条预测</div>
+                        <div class="predict-tab" data-mode="batch">批量预测</div>
                     </div>
-                    <div id="resultContent" style="display:none;">
-                        <div class="result-status" id="resultStatus">
-                            <span class="status-badge" id="statusBadge">--</span>
-                        </div>
-                        <div class="result-detail">
-                            <div class="result-item">
-                                <span class="result-label">缺陷概率</span>
-                                <div class="progress-bar">
-                                    <div class="progress-fill" id="probBar"></div>
+                    <div class="panel-body">
+                        <!-- 单条预测 -->
+                        <div id="singlePredictMode">
+                        <form id="predictForm">
+                            <div class="form-grid">
+                                <div class="form-item">
+                                    <label for="arc_voltage">电弧电压 <span class="unit">(V)</span></label>
+                                    <input type="number" id="arc_voltage" name="arc_voltage" step="0.01" min="0" max="50" placeholder="例如: 22.5" required>
                                 </div>
-                                <span class="result-value" id="probValue">0%</span>
-                            </div>
-                            <div class="result-item">
-                                <span class="result-label">正常概率</span>
-                                <div class="progress-bar">
-                                    <div class="progress-fill progress-normal" id="normalBar"></div>
+                                <div class="form-item">
+                                    <label for="welding_current">焊接电流 <span class="unit">(A)</span></label>
+                                    <input type="number" id="welding_current" name="welding_current" step="0.01" min="0" max="500" placeholder="例如: 180.0" required>
                                 </div>
-                                <span class="result-value" id="normalValue">0%</span>
+                                <div class="form-item">
+                                    <label for="welding_speed">焊接速度 <span class="unit">(cm/min)</span></label>
+                                    <input type="number" id="welding_speed" name="welding_speed" step="0.01" min="0" max="100" placeholder="例如: 30.0" required>
+                                </div>
+                                <div class="form-item">
+                                    <label for="wire_feed_speed">送丝速度 <span class="unit">(m/min)</span></label>
+                                    <input type="number" id="wire_feed_speed" name="wire_feed_speed" step="0.01" min="0" max="30" placeholder="例如: 8.0" required>
+                                </div>
+                                <div class="form-item">
+                                    <label for="gas_flow_rate">气体流量 <span class="unit">(L/min)</span></label>
+                                    <input type="number" id="gas_flow_rate" name="gas_flow_rate" step="0.01" min="0" max="50" placeholder="例如: 15.0" required>
+                                </div>
+                                <div class="form-item">
+                                    <label for="torch_angle">焊枪角度 <span class="unit">(°)</span></label>
+                                    <input type="number" id="torch_angle" name="torch_angle" step="0.01" min="0" max="90" placeholder="例如: 25.0" required>
+                                </div>
+                                <div class="form-item form-item-full">
+                                    <label for="base_metal_temperature">母材温度 <span class="unit">(°C)</span></label>
+                                    <input type="number" id="base_metal_temperature" name="base_metal_temperature" step="0.01" min="0" max="200" placeholder="例如: 50.0" required>
+                                </div>
                             </div>
-                            <div class="result-item">
-                                <span class="result-label">预测置信度</span>
-                                <span class="result-value highlight" id="confValue">--</span>
+                            <div class="form-actions">
+                                <button type="submit" class="btn-predict" id="btnPredict">
+                                    <span class="btn-text">开始预测</span>
+                                    <span class="btn-loading" style="display:none;">预测中...</span>
+                                </button>
+                                <button type="button" class="btn-reset" id="btnReset">重置参数</button>
+                            </div>
+                        </form>
+                        <div class="quick-fill">
+                            <span class="quick-label">快捷填充：</span>
+                            <button class="btn-quick" data-type="normal">正常参数示例</button>
+                            <button class="btn-quick" data-type="defect">异常参数示例</button>
+                        </div>
+                        </div>
+
+                        <!-- 批量预测 -->
+                        <div id="batchPredictMode" style="display:none;">
+                            <div class="batch-upload-area" id="batchDropZone">
+                                <div class="batch-upload-icon">&#128193;</div>
+                                <p class="batch-upload-text">点击或拖拽CSV文件到此处</p>
+                                <p class="batch-upload-hint">支持中英文列名，单次最多500条</p>
+                                <input type="file" id="batchFileInput" accept=".csv" style="display:none;">
+                                <button class="btn-select-file" id="btnSelectFile">选择CSV文件</button>
+                            </div>
+                            <div class="batch-template">
+                                <a href="#" id="downloadTemplate" class="template-link">下载CSV模板</a>
+                            </div>
+                            <div id="batchLoading" style="display:none; text-align:center; padding:30px; color:#888;">
+                                正在批量预测中...
+                            </div>
+                            <div id="batchHint" class="batch-hint">
+                                上传CSV后，预测结果将显示在右侧"预测结果"区域
                             </div>
                         </div>
-                        <div class="result-message" id="resultMessage"></div>
+                    </div>
+                </div>
+
+                <!-- 右侧：预测结果 + 优化建议 -->
+                <div class="panel result-panel">
+                    <div class="panel-header">
+                        <h2><span class="panel-num">02</span>预测结果</h2>
+                    </div>
+                    <div class="panel-body">
+                        <div id="resultPlaceholder" class="result-placeholder">
+                            <div class="placeholder-icon">&#128269;</div>
+                            <p>请输入焊接工艺参数后点击"开始预测"</p>
+                        </div>
+                        <div id="resultContent" style="display:none;">
+                            <div class="result-status" id="resultStatus">
+                                <span class="status-badge" id="statusBadge">--</span>
+                            </div>
+                            <div class="result-detail">
+                                <div class="result-item">
+                                    <span class="result-label">缺陷概率</span>
+                                    <div class="progress-bar">
+                                        <div class="progress-fill" id="probBar"></div>
+                                    </div>
+                                    <span class="result-value" id="probValue">0%</span>
+                                </div>
+                                <div class="result-item">
+                                    <span class="result-label">正常概率</span>
+                                    <div class="progress-bar">
+                                        <div class="progress-fill progress-normal" id="normalBar"></div>
+                                    </div>
+                                    <span class="result-value" id="normalValue">0%</span>
+                                </div>
+                                <div class="result-item">
+                                    <span class="result-label">预测置信度</span>
+                                    <span class="result-value highlight" id="confValue">--</span>
+                                </div>
+                            </div>
+                            <div class="result-message" id="resultMessage"></div>
+
+                            <!-- 优化建议子分区 -->
+                            <div id="optimizeSection" class="optimize-section" style="display:none;">
+                                <div class="optimize-header">
+                                    <h3>&#128161; 参数优化建议</h3>
+                                    <button id="btnApplyOptimize" class="btn-apply">应用建议参数</button>
+                                </div>
+                                <div id="optimizeLoading" class="optimize-loading">
+                                    正在搜索最优参数组合...
+                                </div>
+                                <div id="optimizeContent" style="display:none;">
+                                    <div class="optimize-stats">
+                                        <div class="opt-stat-card orig">
+                                            <div class="opt-stat-label">调整前缺陷概率</div>
+                                            <div class="opt-stat-value" id="optOrigProb">--</div>
+                                        </div>
+                                        <div class="opt-arrow">&#8594;</div>
+                                        <div class="opt-stat-card new">
+                                            <div class="opt-stat-label">调整后缺陷概率</div>
+                                            <div class="opt-stat-value" id="optNewProb">--</div>
+                                        </div>
+                                        <div class="opt-stat-card improve">
+                                            <div class="opt-stat-label">概率降低</div>
+                                            <div class="opt-stat-value" id="optImprove">--</div>
+                                        </div>
+                                    </div>
+                                    <div id="optResultLabel" class="opt-result-label"></div>
+                                    <div class="opt-table-title">建议调整以下参数：</div>
+                                    <table class="opt-adjust-table" id="optAdjustTable">
+                                        <thead>
+                                            <tr>
+                                                <th>参数</th>
+                                                <th>当前值</th>
+                                                <th>建议值</th>
+                                                <th>调整</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="optAdjustBody"></tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 批量预测结果 -->
+                        <div id="batchResultContent" style="display:none;">
+                            <div class="batch-result-header">
+                                <h3>批量预测结果</h3>
+                                <button class="btn-export-batch" id="btnExportBatch">导出CSV</button>
+                            </div>
+                            <div class="batch-stats">
+                                <div class="batch-stat"><span class="batch-stat-label">总数</span><span class="batch-stat-value" id="batchTotal">0</span></div>
+                                <div class="batch-stat low"><span class="batch-stat-label">低风险</span><span class="batch-stat-value" id="batchLow">0</span></div>
+                                <div class="batch-stat medium"><span class="batch-stat-label">中风险</span><span class="batch-stat-value" id="batchMedium">0</span></div>
+                                <div class="batch-stat high"><span class="batch-stat-label">高风险</span><span class="batch-stat-value" id="batchHigh">0</span></div>
+                            </div>
+                            <div class="batch-table-wrapper">
+                                <table class="batch-table">
+                                    <thead>
+                                        <tr>
+                                            <th>行号</th>
+                                            <th>电弧电压</th>
+                                            <th>焊接电流</th>
+                                            <th>焊接速度</th>
+                                            <th>送丝速度</th>
+                                            <th>气体流量</th>
+                                            <th>焊枪角度</th>
+                                            <th>母材温度</th>
+                                            <th>缺陷概率</th>
+                                            <th>风险等级</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="batchResultBody"></tbody>
+                                </table>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
         </section>
 
-        <!-- 图表区 -->
-        <section class="content-row">
-            <div class="panel chart-panel">
-                <div class="panel-header">
-                    <h2>特征重要性分析</h2>
+        <!-- ========== 分区2：数据分析 ========== -->
+        <section class="tab-content" id="tab-analysis">
+            <!-- 统计概览 -->
+            <div class="stats-row">
+                <div class="stat-card">
+                    <div class="stat-label">总预测次数</div>
+                    <div class="stat-value" id="statTotal">0</div>
                 </div>
-                <div class="panel-body">
-                    <div id="importanceChart" class="chart-container"></div>
+                <div class="stat-card">
+                    <div class="stat-label">正常次数</div>
+                    <div class="stat-value stat-normal" id="statNormal">0</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">缺陷预警</div>
+                    <div class="stat-value stat-warning" id="statDefect">0</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">缺陷率</div>
+                    <div class="stat-value" id="statRate">0%</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">模型准确率</div>
+                    <div class="stat-value stat-accuracy" id="statAccuracy">--</div>
                 </div>
             </div>
-            <div class="panel chart-panel">
+
+            <!-- 智能建议 -->
+            <div class="panel suggestion-panel">
                 <div class="panel-header">
-                    <h2>历史预测分布</h2>
+                    <h2><span class="panel-num">00</span>智能工艺建议</h2>
                 </div>
                 <div class="panel-body">
-                    <div id="distributionChart" class="chart-container"></div>
+                    <div id="suggestionList" class="suggestion-list">
+                        <div class="suggestion-loading">正在生成工艺建议...</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="analysis-layout">
+                <div class="panel chart-panel">
+                    <div class="panel-header">
+                        <h2><span class="panel-num">01</span>特征重要性分析</h2>
+                    </div>
+                    <div class="panel-body">
+                        <div id="importanceChart" class="chart-container"></div>
+                    </div>
+                </div>
+                <div class="panel chart-panel">
+                    <div class="panel-header">
+                        <h2><span class="panel-num">02</span>历史预测分布</h2>
+                    </div>
+                    <div class="panel-body">
+                        <div id="distributionChart" class="chart-container"></div>
+                    </div>
                 </div>
             </div>
         </section>
 
-        <!-- 历史记录 -->
-        <section class="panel history-panel">
-            <div class="panel-header">
-                <h2>历史预测记录</h2>
-                <button class="btn-refresh" id="btnRefreshHistory">刷新</button>
-            </div>
-            <div class="panel-body">
-                <div class="table-wrapper">
-                    <table class="history-table" id="historyTable">
-                        <thead>
-                            <tr>
-                                <th>序号</th>
-                                <th>预测时间</th>
-                                <th>电弧电压(V)</th>
-                                <th>焊接电流(A)</th>
-                                <th>焊接速度(cm/min)</th>
-                                <th>送丝速度(m/min)</th>
-                                <th>气体流量(L/min)</th>
-                                <th>焊枪角度(°)</th>
-                                <th>母材温度(°C)</th>
-                                <th>预测结果</th>
-                                <th>缺陷概率</th>
-                            </tr>
-                        </thead>
-                        <tbody id="historyBody">
-                            <tr>
-                                <td colspan="11" class="empty-row">加载中...</td>
-                            </tr>
-                        </tbody>
-                    </table>
+        <!-- ========== 分区3：历史记录 ========== -->
+        <section class="tab-content" id="tab-history">
+            <div class="panel history-panel">
+                <div class="panel-header">
+                    <h2><span class="panel-num">01</span>历史预测记录</h2>
+                    <div class="panel-actions">
+                        <button class="btn-export" id="btnExport">导出CSV</button>
+                        <button class="btn-clear" id="btnClearHistory">清空记录</button>
+                        <button class="btn-refresh" id="btnRefreshHistory">刷新</button>
+                    </div>
+                </div>
+                <div class="panel-body">
+                    <div class="table-wrapper">
+                        <table class="history-table" id="historyTable">
+                            <thead>
+                                <tr>
+                                    <th>序号</th>
+                                    <th>预测时间</th>
+                                    <th>电弧电压(V)</th>
+                                    <th>焊接电流(A)</th>
+                                    <th>焊接速度(cm/min)</th>
+                                    <th>送丝速度(m/min)</th>
+                                    <th>气体流量(L/min)</th>
+                                    <th>焊枪角度(°)</th>
+                                    <th>母材温度(°C)</th>
+                                    <th>预测结果</th>
+                                    <th>缺陷概率</th>
+                                </tr>
+                            </thead>
+                            <tbody id="historyBody">
+                                <tr>
+                                    <td colspan="11" class="empty-row">加载中...</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
         </section>
+
     </main>
 
     <footer class="footer">
